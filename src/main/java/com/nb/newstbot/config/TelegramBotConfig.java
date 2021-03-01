@@ -3,11 +3,13 @@ package com.nb.newstbot.config;
 import com.nb.newstbot.domain.Tbot;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
+import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import javax.annotation.PostConstruct;
+import java.util.TimerTask;
 
 /**
  * @author Nick Barban.
@@ -23,9 +25,9 @@ public class TelegramBotConfig {
         try {
             log.info("Instantiate Telegram Bots API...");
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-
             log.info("Register Telegram Bots API...");
-            botsApi.registerBot(new Tbot(BOT_NAME, BOT_TOKEN));
+            final Tbot bot = new Tbot(BOT_NAME, BOT_TOKEN);
+            botsApi.registerBot(bot);
         } catch (TelegramApiException e) {
             log.error("Exception instantiate Telegram Bot!", e);
         }

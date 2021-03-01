@@ -10,7 +10,10 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author Nick Barban.
@@ -33,15 +36,24 @@ public class NewsCommand extends ServiceCommand {
 
     @Scheduled
     private void sendMessage(AbsSender sender, Chat chat, String username) {
-        try {
-            List<Article> articles = parser.getNews();
-            articles.forEach(a -> {
-                String message = prepareMessage(a);
-                sendAnswer(sender, chat.getId(), this.getCommandIdentifier(), username, message);
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        final String commandIdentifier = this.getCommandIdentifier();
+        final TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    List<Article> articles = parser.getNews();
+                    articles.forEach(a -> {
+                        String message = prepareMessage(a);
+                        sendAnswer(sender, chat.getId(), commandIdentifier, username, message);
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        Timer timer = new Timer();
+        final int periodInMilliseconds = 60000 * 30;
+        timer.scheduleAtFixedRate(task, new Date(), periodInMilliseconds);
     }
 
     private String prepareMessage(Article article) {
