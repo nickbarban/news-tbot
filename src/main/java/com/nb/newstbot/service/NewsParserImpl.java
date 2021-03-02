@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,13 @@ public class NewsParserImpl implements NewsParser {
         articles.addAll(getBessarabia());
         articles.addAll(getGorod24());
         articles.addAll(getUkrinform());
-        return articles;
+        return articles.stream().sorted(Comparator.comparing(Article::getDate)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Article> getLatestNews(LocalDateTime latest) {
+        // TODO by nbarban: 02/03/21 Should be added check that more recent news are available
+        return getNews().stream().filter(article -> article.getDate().isAfter(latest)).collect(Collectors.toList());
     }
 
     private List<Article> getUkrinform() {
