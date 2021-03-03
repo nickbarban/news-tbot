@@ -31,6 +31,7 @@ import static com.nb.newstbot.NewsTbotApplication.RESOURCES;
 public class NewsParserImpl implements NewsParser {
     @Override
     public List<Article> getNews() {
+        log.info("Fetch all news");
         final List<Article> articles = getBessarabiainformArticles();
         articles.addAll(getBessarabia());
         articles.addAll(getGorod24());
@@ -40,6 +41,7 @@ public class NewsParserImpl implements NewsParser {
 
     @Override
     public List<Article> getLatestNews(LocalDateTime latest) {
+        log.info("Fetch news after {}", latest);
         // TODO by nbarban: 02/03/21 Should be added check that more recent news are available
         return getNews()
                 .stream()
@@ -84,6 +86,7 @@ public class NewsParserImpl implements NewsParser {
                         final String date = dateDiv.text();
                         try {
                             startDate = LocalDate.parse(date);
+                            log.info("New start date is: {}", startDate);
                         } catch (Exception ex) {
                             log.error("Could not parse date text for div: %s".formatted(date), ex);
                         }
