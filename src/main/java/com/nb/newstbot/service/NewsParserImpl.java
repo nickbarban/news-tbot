@@ -78,6 +78,7 @@ public class NewsParserImpl implements NewsParser {
                     article.setTitle(e.select("a").first().text());
                     articles.add(article);
                 } else {
+                    log.info(e.toString());
                     final Elements dateDiv = e.select("div.tabview-main-date");
                     if (dateDiv != null) {
                         final String date = dateDiv.text();
