@@ -82,7 +82,11 @@ public class NewsParserImpl implements NewsParser {
                     final Elements dateDiv = e.select("div.tabview-main-date");
                     if (dateDiv != null) {
                         final String date = dateDiv.text();
-                        startDate = LocalDate.parse(date);
+                        try {
+                            startDate = LocalDate.parse(date);
+                        } catch (Exception ex) {
+                            log.error("Could not parse date text for div: %s".formatted(date), ex);
+                        }
                     }
                 }
             }
