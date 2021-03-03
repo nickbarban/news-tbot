@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -40,7 +41,10 @@ public class NewsParserImpl implements NewsParser {
     @Override
     public List<Article> getLatestNews(LocalDateTime latest) {
         // TODO by nbarban: 02/03/21 Should be added check that more recent news are available
-        return getNews().stream().filter(article -> article.getDate().isAfter(latest)).collect(Collectors.toList());
+        return getNews()
+                .stream()
+                .filter(article -> article.getDate().isAfter(latest))
+                .collect(Collectors.toList());
     }
 
     private List<Article> getUkrinform() {
@@ -57,22 +61,30 @@ public class NewsParserImpl implements NewsParser {
 
     private List<Article> getBessarabiainformArticles() {
         final String url = RESOURCES.get(0);
+        final List<Article> articles = new ArrayList<>();
 
         try {
             Document document = Jsoup.connect(url).get();
             final Elements lenta = document.select("div.lenta_holder");
             final Element firstLenta = lenta.first();
             final Elements firstLentDivs = firstLenta.select("div");
-            final List<Article> articles = firstLentDivs.stream()
-                    .filter(div -> div.select("dfn") != null && div.select("dfn").first() != null)
-                    .map(div -> {
-                        Article article = new Article();
-                        article.setDate(LocalDateTime.of(LocalDate.now(), LocalTime.parse(div.select("dfn").first().text())));
-                        article.setLink(div.select("a").first().attr("href"));
-                        article.setTitle(div.select("a").first().text());
-                        return article;
-                    })
-                    .collect(Collectors.toList());
+
+            LocalDate startDate = LocalDate.now();
+            for (Element e : firstLentDivs) {
+                if (e.select("dfn") != null && e.select("dfn").first() != null) {
+                    final Article article = new Article();
+                    article.setDate(LocalDateTime.of(startDate, LocalTime.parse(e.select("dfn").first().text())));
+                    article.setLink(e.select("a").first().attr("href"));
+                    article.setTitle(e.select("a").first().text());
+                    articles.add(article);
+                } else {
+                    final Elements dateDiv = e.select("div.tabview-main-date");
+                    if (dateDiv != null) {
+                        final String date = dateDiv.text();
+                        startDate = LocalDate.parse(date);
+                    }
+                }
+            }
 
             if (CollectionUtils.isEmpty(articles)) {
                 log.error("There are no articles");

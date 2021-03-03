@@ -3,6 +3,7 @@ package com.nb.newstbot.domain;
 import com.nb.newstbot.service.NewsParser;
 import com.nb.newstbot.service.NewsParserImpl;
 import com.nb.newstbot.utils.Utils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -19,6 +20,7 @@ import java.util.TimerTask;
 /**
  * @author Nick Barban.
  */
+@Slf4j
 public class NewsCommand extends ServiceCommand {
 
     private NewsParser parser = new NewsParserImpl();
@@ -50,8 +52,10 @@ public class NewsCommand extends ServiceCommand {
                     } else {
                         articles = parser.getLatestNews(latest);
                     }
+                    log.info("{} messages will be sent", articles.size());
                     articles.forEach(a -> {
                         String message = prepareMessage(a);
+                        log.info("Send message: {}", message);
                         sendAnswer(sender, chat.getId(), commandIdentifier, username, message);
                         latest = articles.get(0).getDate();
                     });
@@ -61,7 +65,7 @@ public class NewsCommand extends ServiceCommand {
             }
         };
         Timer timer = new Timer();
-        final int periodInMilliseconds = 60000 * 30;
+        final int periodInMilliseconds = 60000 * 5;
         timer.scheduleAtFixedRate(task, new Date(), periodInMilliseconds);
     }
 
