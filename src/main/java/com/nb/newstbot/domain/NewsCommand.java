@@ -57,7 +57,7 @@ public class NewsCommand extends ServiceCommand {
                         String message = prepareMessage(a);
                         log.info("Send message: {}", message);
                         sendAnswer(sender, chat.getId(), commandIdentifier, username, message);
-                        latest = articles.get(0).getDate();
+                        latest = articles.get(articles.size() - 1).getDate();
                     });
                 } catch (IOException e) {
                     e.printStackTrace();
