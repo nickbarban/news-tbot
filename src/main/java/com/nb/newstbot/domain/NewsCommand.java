@@ -83,10 +83,13 @@ public class NewsCommand extends ServiceCommand {
     }
 
     private void saveIfNotExists(Chat chat, User user) {
-        NewsMetaData meta = new NewsMetaData();
-        meta.setChat(chat);
-        meta.setUser(user);
-        latestArticlePerChat.put(chat.getId(), meta);
+        if (!latestArticlePerChat.containsKey(chat.getId())) {
+            log.info("Add new chat with id: {} for user: {}", chat.getId(), Utils.getUsername(user));
+            NewsMetaData meta = new NewsMetaData();
+            meta.setChat(chat);
+            meta.setUser(user);
+            latestArticlePerChat.put(chat.getId(), meta);
+        }
     }
 
     private String prepareMessage(Article article) {
