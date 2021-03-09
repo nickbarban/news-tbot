@@ -8,6 +8,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -91,12 +92,15 @@ public class NewsParserImpl implements NewsParser {
                     log.info(e.toString());
                     final Elements dateDiv = e.select("div.tabview-main-date");
                     if (dateDiv != null) {
-                        final String date = dateDiv.text();
-                        try {
-                            startDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-                            log.info("New start date is: {}", startDate);
-                        } catch (Exception ex) {
-                            log.error("Could not parse date text for div: %s".formatted(date), ex);
+                        final String date = dateDiv.text().trim();
+
+                        if (!StringUtils.isEmpty(date)) {
+                            try {
+                                startDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+                                log.info("New start date is: {}", startDate);
+                            } catch (Exception ex) {
+                                log.error("Could not parse date text for div: %s".formatted(date), ex);
+                            }
                         }
                     }
                 }
