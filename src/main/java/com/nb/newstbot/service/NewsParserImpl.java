@@ -93,7 +93,7 @@ public class NewsParserImpl implements NewsParser {
                     if (dateDiv != null) {
                         final String date = dateDiv.text();
                         try {
-                            startDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+                            startDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
                             log.info("New start date is: {}", startDate);
                         } catch (Exception ex) {
                             log.error("Could not parse date text for div: %s".formatted(date), ex);
