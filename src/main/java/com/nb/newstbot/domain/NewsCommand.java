@@ -26,7 +26,6 @@ import java.util.TimerTask;
 public class NewsCommand extends ServiceCommand {
 
     private NewsParser parser = new NewsParserImpl();
-    private Article latest = null;
     private Map<Long, NewsMetaData> latestArticlePerChat = new HashMap<>();
 
     public NewsCommand(String identifier, String description) {
@@ -67,7 +66,6 @@ public class NewsCommand extends ServiceCommand {
                             log.info("Send message: {} to {} chats", message, latestArticlePerChat.size());
                             // TODO by nbarban: 09/03/21 Should be added possibility to send unread articles to each chat personally
                             sendAnswer(sender, chatId, commandIdentifier, username, message);
-                            latest = articles.get(articles.size() - 1);
                         });
                     } catch (IOException ex) {
                         String error = "Could not parse and sent news to chat %d".formatted(chatId);
