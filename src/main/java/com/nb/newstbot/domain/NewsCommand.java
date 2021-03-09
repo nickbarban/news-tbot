@@ -57,7 +57,10 @@ public class NewsCommand extends ServiceCommand {
                             articles.addAll(parser.getLatestNews(metaData.getLatestArticle()));
                         }
 
-                        metaData.setLatestArticle(articles.get(articles.size() - 1));
+                        if (!articles.isEmpty()) {
+                            metaData.setLatestArticle(articles.get(articles.size() - 1));
+                        }
+
                         log.info("{} messages will be sent", articles.size());
                         articles.forEach(a -> {
                             String message = prepareMessage(a);
