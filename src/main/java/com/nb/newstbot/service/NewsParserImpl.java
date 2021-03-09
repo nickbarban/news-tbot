@@ -37,7 +37,7 @@ public class NewsParserImpl implements NewsParser {
         articles.addAll(getBessarabia());
         articles.addAll(getGorod24());
         articles.addAll(getUkrinform());
-        return articles.stream().sorted(Comparator.comparing(Article::getDate)).collect(Collectors.toList());
+        return articles.stream().distinct().sorted(Comparator.comparing(Article::getDate)).collect(Collectors.toList());
     }
 
     @Override
