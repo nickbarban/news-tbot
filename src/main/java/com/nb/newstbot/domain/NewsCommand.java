@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -80,7 +79,7 @@ public class NewsCommand extends ServiceCommand {
     }
 
     private boolean newChat(Long chatId) {
-        return Optional.ofNullable(latestArticlePerChat.get(chatId).getLatestArticle()).isPresent();
+        return latestArticlePerChat.get(chatId).getLatestArticle() == null;
     }
 
     private void saveIfNotExists(Chat chat, User user) {
