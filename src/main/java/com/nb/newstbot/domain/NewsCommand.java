@@ -10,8 +10,8 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -25,6 +25,7 @@ public class NewsCommand extends ServiceCommand {
 
     private NewsParser parser = new NewsParserImpl();
     private Article latest = null;
+    private List<Chat> chats = new ArrayList<>();
 
     public NewsCommand(String identifier, String description) {
         super(identifier, description);
@@ -40,6 +41,7 @@ public class NewsCommand extends ServiceCommand {
 
     @Scheduled
     private void sendMessage(AbsSender sender, Chat chat, String username) {
+        chats.add(chat);
         final String commandIdentifier = this.getCommandIdentifier();
         final TimerTask task = new TimerTask() {
             @Override
@@ -56,7 +58,7 @@ public class NewsCommand extends ServiceCommand {
                     articles.forEach(a -> {
                         String message = prepareMessage(a);
                         log.info("Send message: {}", message);
-                        sendAnswer(sender, chat.getId(), commandIdentifier, username, message);
+                        chats.forEach(ch -> sendAnswer(sender, ch.getId(), commandIdentifier, username, message));
                         latest = articles.get(articles.size() - 1);
                     });
                 } catch (IOException e) {
