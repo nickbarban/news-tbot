@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -92,7 +93,7 @@ public class NewsParserImpl implements NewsParser {
                     if (dateDiv != null) {
                         final String date = dateDiv.text();
                         try {
-                            startDate = LocalDate.parse(date);
+                            startDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy.MM.dd"));
                             log.info("New start date is: {}", startDate);
                         } catch (Exception ex) {
                             log.error("Could not parse date text for div: %s".formatted(date), ex);
