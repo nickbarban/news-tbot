@@ -40,12 +40,19 @@ public class NewsParserImpl implements NewsParser {
     }
 
     @Override
-    public List<Article> getLatestNews(LocalDateTime latest) {
+    public List<Article> getLatestNews(Article latest) {
         log.info("Fetch news after {}", latest);
         // TODO by nbarban: 02/03/21 Should be added check that more recent news are available
-        return getNews()
+        final List<Article> news = getNews();
+        int latestArticleIndex = news.stream()
+                .filter(a -> a.getTitle().equalsIgnoreCase(latest.getTitle()))
+                .findFirst()
+                .map(news::indexOf)
+                .orElse(0);
+        news.subList(latestArticleIndex, news.size());
+        return news
                 .stream()
-                .filter(article -> article.getDate().isAfter(latest))
+                .filter(article -> article.getDate().isAfter(latest.getDate()))
                 .collect(Collectors.toList());
     }
 

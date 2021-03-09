@@ -24,7 +24,7 @@ import java.util.TimerTask;
 public class NewsCommand extends ServiceCommand {
 
     private NewsParser parser = new NewsParserImpl();
-    private LocalDateTime latest = null;
+    private Article latest = null;
 
     public NewsCommand(String identifier, String description) {
         super(identifier, description);
@@ -57,7 +57,7 @@ public class NewsCommand extends ServiceCommand {
                         String message = prepareMessage(a);
                         log.info("Send message: {}", message);
                         sendAnswer(sender, chat.getId(), commandIdentifier, username, message);
-                        latest = articles.get(articles.size() - 1).getDate();
+                        latest = articles.get(articles.size() - 1);
                     });
                 } catch (IOException e) {
                     e.printStackTrace();
