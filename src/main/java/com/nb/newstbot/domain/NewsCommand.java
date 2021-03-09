@@ -57,7 +57,7 @@ public class NewsCommand extends ServiceCommand {
                     log.info("{} messages will be sent", articles.size());
                     articles.forEach(a -> {
                         String message = prepareMessage(a);
-                        log.info("Send message: {}", message);
+                        log.info("Send message: {} to {} chats", message, chats.size());
                         chats.forEach(ch -> sendAnswer(sender, ch.getId(), commandIdentifier, username, message));
                         latest = articles.get(articles.size() - 1);
                     });
