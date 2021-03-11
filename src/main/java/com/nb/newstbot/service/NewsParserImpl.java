@@ -31,6 +31,9 @@ import static com.nb.newstbot.NewsTbotApplication.RESOURCES;
 @Service
 @Slf4j
 public class NewsParserImpl implements NewsParser {
+
+    private LocalDate today = LocalDate.now();
+
     @Override
     public List<Article> getNews() {
         log.info("Fetch all news");
@@ -80,13 +83,19 @@ public class NewsParserImpl implements NewsParser {
             final Element firstLenta = lenta.first();
             final Elements firstLentDivs = firstLenta.select("div");
 
-            LocalDate startDate = LocalDate.now();
+            LocalDate yesterday = null;
             for (Element e : firstLentDivs) {
                 if (e.select("dfn") != null && e.select("dfn").first() != null) {
                     final Article article = new Article();
-                    article.setDate(LocalDateTime.of(startDate, LocalTime.parse(e.select("dfn").first().text())));
                     article.setLink(e.select("a").first().attr("href"));
                     article.setTitle(e.select("a").first().text());
+
+                    if (yesterday == null) {
+                        article.setDate(LocalDateTime.of(today, LocalTime.parse(e.select("dfn").first().text())));
+                    } else {
+                        article.setDate(LocalDateTime.of(yesterday, LocalTime.parse(e.select("dfn").first().text())));
+                    }
+
                     articles.add(article);
                 } else {
                     log.info(e.toString());
@@ -96,8 +105,8 @@ public class NewsParserImpl implements NewsParser {
 
                         if (!StringUtils.isEmpty(date)) {
                             try {
-                                startDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-                                log.info("New start date is: {}", startDate);
+                                yesterday = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+                                log.info("New start date is: {}", yesterday);
                             } catch (Exception ex) {
                                 log.error("Could not parse date text for div: %s".formatted(date), ex);
                             }

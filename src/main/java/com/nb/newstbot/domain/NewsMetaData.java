@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
  */
 @Data
 public class NewsMetaData {
-    Chat chat;
-    User user;
-    Article latestArticle;
+    private Chat chat;
+    private User user;
+    private Article latestArticle;
 }

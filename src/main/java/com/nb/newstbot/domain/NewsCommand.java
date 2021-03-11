@@ -5,13 +5,14 @@ import com.nb.newstbot.service.NewsParserImpl;
 import com.nb.newstbot.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.CollectionUtils;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -46,37 +47,45 @@ public class NewsCommand extends ServiceCommand {
         final TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                final List<Article> articles = new ArrayList<>();
+                List<Article> articles = getArticles(chat);
                 latestArticlePerChat.forEach((chatId, metaData) -> {
-                    try {
 
-                        if (newChat(chatId)) {
-                            articles.addAll(parser.getNews());
-                        } else {
-                            articles.addAll(parser.getLatestNews(metaData.getLatestArticle()));
-                        }
-
-                        if (!articles.isEmpty()) {
-                            metaData.setLatestArticle(articles.get(articles.size() - 1));
-                        }
-
-                        log.info("{} messages will be sent", articles.size());
-                        articles.forEach(a -> {
-                            String message = prepareMessage(a);
-                            log.info("Send message: {} to {} chat{}", message, latestArticlePerChat.size(), latestArticlePerChat.size() == 1 ? "" : "s");
-                            // TODO by nbarban: 09/03/21 Should be added possibility to send unread articles to each chat personally
-                            sendAnswer(sender, chatId, commandIdentifier, username, message);
-                        });
-                    } catch (IOException ex) {
-                        String error = "Could not parse and sent news to chat %d".formatted(chatId);
-                        log.error(error, ex);
+                    if (!CollectionUtils.isEmpty(articles)) {
+                        metaData.setLatestArticle(articles.get(articles.size() - 1));
                     }
+
+                    log.info("{} messages will be sent", articles.size());
+                    Article latestArticle = metaData.getLatestArticle();
+                    int latestArticleIndex = articles.indexOf(latestArticle);
+                    List<Article> unsentArticles = articles.subList(latestArticleIndex, articles.size());
+                    unsentArticles.forEach(a -> {
+                        String message = prepareMessage(a);
+                        log.info("Send message: {} to {} chat{}", message, latestArticlePerChat.size(), latestArticlePerChat.size() == 1 ? "" : "s");
+                        // TODO by nbarban: 09/03/21 Should be added possibility to send unread articles to each chat personally
+                        sendAnswer(sender, chatId, commandIdentifier, username, message);
+                    });
                 });
             }
         };
         Timer timer = new Timer();
         final int periodInMilliseconds = 60000 * 5;
         timer.scheduleAtFixedRate(task, new Date(), periodInMilliseconds);
+    }
+
+    private List<Article> getArticles(Chat chat) {
+        try {
+            return parser.getNews();
+            /*if (newChat(chat.getId())) {
+                return parser.getNews();
+            } else {
+                NewsMetaData metaData = latestArticlePerChat.get(chat.getId());
+                return parser.getLatestNews(metaData.getLatestArticle());
+            }*/
+        } catch (IOException ex) {
+            String error = "Could not parse and sent news to chat %d".formatted(chat.getId());
+            log.error(error, ex);
+        }
+        return Collections.emptyList();
     }
 
     private boolean newChat(Long chatId) {
