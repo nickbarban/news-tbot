@@ -50,20 +50,21 @@ public class NewsCommand extends ServiceCommand {
                 List<Article> articles = getArticles(chat);
                 latestArticlePerChat.forEach((chatId, metaData) -> {
 
-                    if (!CollectionUtils.isEmpty(articles)) {
-                        metaData.setLatestArticle(articles.get(articles.size() - 1));
-                    }
-
-                    log.info("{} messages will be sent", articles.size());
                     Article latestArticle = metaData.getLatestArticle();
                     int latestArticleIndex = articles.indexOf(latestArticle);
                     List<Article> unsentArticles = articles.subList(latestArticleIndex, articles.size());
+
+                    log.info("{} messages will be sent", unsentArticles.size());
                     unsentArticles.forEach(a -> {
                         String message = prepareMessage(a);
                         log.info("Send message: {} to {} chat{}", message, latestArticlePerChat.size(), latestArticlePerChat.size() == 1 ? "" : "s");
                         // TODO by nbarban: 09/03/21 Should be added possibility to send unread articles to each chat personally
                         sendAnswer(sender, chatId, commandIdentifier, username, message);
                     });
+
+                    if (!CollectionUtils.isEmpty(articles)) {
+                        metaData.setLatestArticle(articles.get(articles.size() - 1));
+                    }
                 });
             }
         };

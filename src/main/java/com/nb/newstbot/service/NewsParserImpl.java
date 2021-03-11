@@ -119,6 +119,7 @@ public class NewsParserImpl implements NewsParser {
                 log.error("There are no articles");
             }
 
+            log.info("Parsed {} articles", articles.size());
             return articles;
         } catch (IOException e) {
             log.error("Could not connect to url: %s".formatted(url), e);
