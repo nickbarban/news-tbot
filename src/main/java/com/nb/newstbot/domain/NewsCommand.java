@@ -51,8 +51,14 @@ public class NewsCommand extends ServiceCommand {
                 latestArticlePerChat.forEach((chatId, metaData) -> {
 
                     Article latestArticle = metaData.getLatestArticle();
-                    int latestArticleIndex = articles.indexOf(latestArticle);
-                    List<Article> unsentArticles = articles.subList(latestArticleIndex, articles.size());
+                    List<Article> unsentArticles;
+
+                    if (latestArticle != null) {
+                        int latestArticleIndex = articles.indexOf(latestArticle);
+                        unsentArticles = articles.subList(latestArticleIndex, articles.size());
+                    } else {
+                        unsentArticles = articles;
+                    }
 
                     log.info("{} messages will be sent", unsentArticles.size());
                     unsentArticles.forEach(a -> {
