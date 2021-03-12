@@ -1,5 +1,6 @@
 package com.nb.newstbot.service;
 
+import com.nb.newstbot.NewsTbotApplication;
 import com.nb.newstbot.domain.Article;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -70,7 +71,47 @@ public class NewsParserImpl implements NewsParser {
     }
 
     private List<Article> getBessarabia() {
-        return Collections.emptyList();
+        String url = NewsTbotApplication.RESOURCES.get(1);
+
+        try {
+            final Document document = Jsoup.connect(url).get();
+            final Elements lenta = document.select("div.latestDate");
+            final Element todayLenta = lenta.first();
+            final List<Article> articles = getArticlesPerDay(todayLenta);
+            final Element yesterdayLenta = lenta.get(1);
+            articles.addAll(getArticlesPerDay(yesterdayLenta));
+
+            if (CollectionUtils.isEmpty(articles)) {
+                log.error("There are no articles");
+            } else {
+                log.info("Parsed {} articles", articles.size());
+            }
+
+            return articles;
+        } catch (IOException e) {
+            log.error("Could not connect to url: %s".formatted(url), e);
+            return Collections.emptyList();
+        }
+    }
+
+    private List<Article> getArticlesPerDay(Element lenta) {
+        final Element lentaDateElement = lenta.select("div.latestDateTitle").first();
+        final Element lentaNewsElement = lenta.select("div.latestDatePosts").first();
+        final LocalDate lentaLocalDate = LocalDate.parse(lentaDateElement.text(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        return lentaNewsElement.select("a")
+                .stream()
+                .map(element -> articleFromElement(lentaLocalDate, element))
+                .collect(Collectors.toList());
+    }
+
+    private Article articleFromElement(LocalDate todayLentaLocalDate, Element element) {
+        final Article article = new Article();
+        article.setLink(element.attr("href"));
+        article.setTitle(element.attr("title"));
+        final String spanWithArticleTime = element.select("span").first().text();
+        final LocalTime articleLocalDateTime = LocalTime.parse(spanWithArticleTime, DateTimeFormatter.ofPattern("HH:mm"));
+        article.setDate(LocalDateTime.of(todayLentaLocalDate, articleLocalDateTime));
+        return article;
     }
 
     private List<Article> getBessarabiainformArticles() {
@@ -117,9 +158,10 @@ public class NewsParserImpl implements NewsParser {
 
             if (CollectionUtils.isEmpty(articles)) {
                 log.error("There are no articles");
+            } else {
+                log.info("Parsed {} articles", articles.size());
             }
 
-            log.info("Parsed {} articles", articles.size());
             return articles;
         } catch (IOException e) {
             log.error("Could not connect to url: %s".formatted(url), e);

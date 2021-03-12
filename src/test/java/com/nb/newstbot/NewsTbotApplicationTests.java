@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,5 +82,41 @@ public class NewsTbotApplicationTests {
         System.out.println(articles.size());
 //        System.out.println(firstLentDivs);
         System.out.println(new String(new char[100]).replace('\0', '!'));
+    }
+
+    @Test
+    public void shouldParseBessarabia() throws IOException {
+        String url = NewsTbotApplication.RESOURCES.get(1);
+        Document document = Jsoup.connect(url).get();
+        final Elements lenta = document.select("div.latestDate");
+
+        final Element todayLenta = lenta.first();
+        final List<Article> articles = getArticlesPerDay(todayLenta);
+        final Element yesterdayLenta = lenta.get(1);
+        articles.addAll(getArticlesPerDay(yesterdayLenta));
+
+        System.out.println(new String(new char[100]).replace('\0', '!'));
+        System.out.println(articles.size());
+        System.out.println(new String(new char[100]).replace('\0', '!'));
+    }
+
+    private List<Article> getArticlesPerDay(Element lenta) {
+        final Element lentaDateElement = lenta.select("div.latestDateTitle").first();
+        final Element lentaNewsElement = lenta.select("div.latestDatePosts").first();
+        final LocalDate lentaLocalDate = LocalDate.parse(lentaDateElement.text(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        return lentaNewsElement.select("a")
+                .stream()
+                .map(element -> articleFromElement(lentaLocalDate, element))
+                .collect(Collectors.toList());
+    }
+
+    private Article articleFromElement(LocalDate todayLentaLocalDate, Element element) {
+        final Article article = new Article();
+        article.setLink(element.attr("href"));
+        article.setTitle(element.attr("title"));
+        final String spanWithArticleTime = element.select("span").first().text();
+        final LocalTime articleLocalDateTime = LocalTime.parse(spanWithArticleTime, DateTimeFormatter.ofPattern("HH:mm"));
+        article.setDate(LocalDateTime.of(todayLentaLocalDate, articleLocalDateTime));
+        return article;
     }
 }
