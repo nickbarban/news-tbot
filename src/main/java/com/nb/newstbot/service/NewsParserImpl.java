@@ -38,7 +38,8 @@ public class NewsParserImpl implements NewsParser {
     @Override
     public List<Article> getNews() {
         log.info("Fetch all news");
-        final List<Article> articles = getBessarabiainformArticles();
+        final List<Article> articles = new ArrayList<>();
+        articles.addAll(getBessarabiainformArticles());
         articles.addAll(getBessarabia());
         articles.addAll(getGorod24());
         articles.addAll(getUkrinform());
