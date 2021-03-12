@@ -55,7 +55,7 @@ public class NewsCommand extends ServiceCommand {
 
                     if (latestArticle != null) {
                         int latestArticleIndex = articles.indexOf(latestArticle);
-                        unsentArticles = articles.subList(latestArticleIndex, articles.size());
+                        unsentArticles = articles.subList(latestArticleIndex + 1, articles.size());
                     } else {
                         unsentArticles = articles;
                     }
