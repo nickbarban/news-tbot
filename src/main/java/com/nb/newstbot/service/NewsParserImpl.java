@@ -85,7 +85,7 @@ public class NewsParserImpl implements NewsParser {
             if (CollectionUtils.isEmpty(articles)) {
                 log.error("There are no articles");
             } else {
-                log.info("Parsed {} articles", articles.size());
+                log.info("Parsed {} articles from bessarabia", articles.size());
             }
 
             return articles;
@@ -160,7 +160,7 @@ public class NewsParserImpl implements NewsParser {
             if (CollectionUtils.isEmpty(articles)) {
                 log.error("There are no articles");
             } else {
-                log.info("Parsed {} articles", articles.size());
+                log.info("Parsed {} articles from bessarabia inform", articles.size());
             }
 
             return articles;

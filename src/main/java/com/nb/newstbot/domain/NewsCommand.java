@@ -63,7 +63,7 @@ public class NewsCommand extends ServiceCommand {
                     log.info("{} messages will be sent", unsentArticles.size());
                     unsentArticles.forEach(a -> {
                         String message = prepareMessage(a);
-                        log.info("Send message: {} to chat {}", message, chatId);
+                        log.debug("Send message: {} to chat {}", message, chatId);
                         // TODO by nbarban: 09/03/21 Should be added possibility to send unread articles to each chat personally
                         sendAnswer(sender, chatId, commandIdentifier, username, message);
                     });
