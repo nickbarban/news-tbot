@@ -131,6 +131,7 @@ public class NewsParserImpl implements NewsParser {
                     final Article article = new Article();
                     article.setLink(e.select("a").first().attr("href"));
                     article.setTitle(e.select("a").first().text());
+                    log.info(e.select("span.fa").text());
 
                     if (yesterday == null) {
                         article.setDate(LocalDateTime.of(today, LocalTime.parse(e.select("dfn").first().text())));

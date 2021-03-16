@@ -75,6 +75,9 @@ public class NewsTbotApplicationTests {
                     article.setDate(LocalDateTime.of(LocalDate.now(), LocalTime.parse(div.select("dfn").first().text())));
                     article.setLink(div.select("a").first().attr("href"));
                     article.setTitle(div.select("a").first().text());
+                    System.out.println(new String(new char[100]).replace('\0', '!'));
+                    System.out.println(div.select("span.fa").text());
+                    System.out.println(new String(new char[100]).replace('\0', '!'));
                     return article;
                 })
                 .collect(Collectors.toList());
