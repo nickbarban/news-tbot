@@ -1,10 +1,10 @@
 package com.nb.newstbot.domain;
 
+import com.nb.newstbot.service.InstagramClient;
 import com.nb.newstbot.service.NewsParser;
 import com.nb.newstbot.service.NewsParserImpl;
 import com.nb.newstbot.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.CollectionUtils;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -28,9 +28,13 @@ public class NewsCommand extends ServiceCommand {
 
     private NewsParser parser = new NewsParserImpl();
     private Map<Long, NewsMetaData> latestArticlePerChat = new HashMap<>();
+    private InstagramClient instagram = new InstagramClient();
 
     public NewsCommand(String identifier, String description) {
         super(identifier, description);
+        NewsMetaData instagramMetaData = new NewsMetaData();
+        Long instagramChatId = -1L;
+        latestArticlePerChat.put(instagramChatId, instagramMetaData);
     }
 
     @Override
@@ -41,7 +45,6 @@ public class NewsCommand extends ServiceCommand {
 
     }
 
-    @Scheduled
     private void sendMessage(AbsSender sender, Chat chat, String username) {
         final String commandIdentifier = this.getCommandIdentifier();
         final TimerTask task = new TimerTask() {
@@ -65,7 +68,11 @@ public class NewsCommand extends ServiceCommand {
                         String message = prepareMessage(a);
                         log.debug("Send message: {} to chat {}", message, chatId);
                         // TODO by nbarban: 09/03/21 Should be added possibility to send unread articles to each chat personally
-                        sendAnswer(sender, chatId, commandIdentifier, username, message);
+                        if (chatId > 0) {
+                            sendAnswer(sender, chatId, commandIdentifier, username, message);
+                        } else {
+                            sendToInstagram(message);
+                        }
                     });
 
                     if (!CollectionUtils.isEmpty(articles)) {
@@ -79,24 +86,18 @@ public class NewsCommand extends ServiceCommand {
         timer.scheduleAtFixedRate(task, new Date(), periodInMilliseconds);
     }
 
+    private void sendToInstagram(String message) {
+        instagram.send(message);
+    }
+
     private List<Article> getArticles(Chat chat) {
         try {
             return parser.getNews();
-            /*if (newChat(chat.getId())) {
-                return parser.getNews();
-            } else {
-                NewsMetaData metaData = latestArticlePerChat.get(chat.getId());
-                return parser.getLatestNews(metaData.getLatestArticle());
-            }*/
         } catch (IOException ex) {
             String error = "Could not parse and sent news to chat %d".formatted(chat.getId());
             log.error(error, ex);
         }
         return Collections.emptyList();
-    }
-
-    private boolean newChat(Long chatId) {
-        return latestArticlePerChat.get(chatId).getLatestArticle() == null;
     }
 
     private void saveIfNotExists(Chat chat, User user) {

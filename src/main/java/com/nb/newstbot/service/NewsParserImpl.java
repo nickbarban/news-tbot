@@ -33,8 +33,6 @@ import static com.nb.newstbot.NewsTbotApplication.RESOURCES;
 @Slf4j
 public class NewsParserImpl implements NewsParser {
 
-    private LocalDate today = LocalDate.now();
-
     @Override
     public List<Article> getNews() {
         log.info("Fetch all news");
@@ -125,18 +123,26 @@ public class NewsParserImpl implements NewsParser {
             final Element firstLenta = lenta.first();
             final Elements firstLentDivs = firstLenta.select("div");
 
-            LocalDate yesterday = null;
+            LocalDate yesterday;
             for (Element e : firstLentDivs) {
                 if (e.select("dfn") != null && e.select("dfn").first() != null) {
                     final Article article = new Article();
                     article.setLink(e.select("a").first().attr("href"));
                     article.setTitle(e.select("a").first().text());
-                    log.info(e.select("span.fa").text());
+                    final String date = e.select("span.fa").text();
 
-                    if (yesterday == null) {
-                        article.setDate(LocalDateTime.of(today, LocalTime.parse(e.select("dfn").first().text())));
+                    if (date.equalsIgnoreCase("сегодня")) {
+                        article.setDate(LocalDateTime.of(LocalDate.now(), LocalTime.parse(e.select("dfn").first().text())));
+                    } else if (date.equalsIgnoreCase("вчера")) {
+                        article.setDate(LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.parse(e.select("dfn").first().text())));
                     } else {
-                        article.setDate(LocalDateTime.of(yesterday, LocalTime.parse(e.select("dfn").first().text())));
+                        try {
+                            LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+                            article.setDate(LocalDateTime.of(localDate, LocalTime.parse(e.select("dfn").first().text())));
+                        } catch (Exception ex) {
+                            log.error("Could not parse date of article: %s".formatted(date), ex);
+                            article.setDate(LocalDateTime.of(LocalDate.now().minusDays(2), LocalTime.parse(e.select("dfn").first().text())));
+                        }
                     }
 
                     articles.add(article);
