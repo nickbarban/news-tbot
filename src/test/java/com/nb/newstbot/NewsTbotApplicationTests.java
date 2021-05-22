@@ -2,10 +2,12 @@ package com.nb.newstbot;
 
 import com.nb.newstbot.domain.Article;
 import com.nb.newstbot.domain.Tbot;
+import com.nb.newstbot.service.InstagramClient;
 import com.nb.newstbot.service.NewsParser;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.assertj.core.api.Assertions;
+import org.brunocvcunha.instagram4j.Instagram4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -101,6 +103,14 @@ public class NewsTbotApplicationTests {
         System.out.println(new String(new char[100]).replace('\0', '!'));
         System.out.println(articles.size());
         System.out.println(new String(new char[100]).replace('\0', '!'));
+    }
+
+    @Test
+    public void shouldSendPostToTest() throws IOException {
+        /*InstagramClient instagram = new InstagramClient();
+        final Instagram4j instagram4j = instagram.initInstagram(instaUsername, instaPassword);
+        instagram.loginInstagram(instagram4j);
+        instagram.broadcastMessage()*/
     }
 
     private List<Article> getArticlesPerDay(Element lenta) {

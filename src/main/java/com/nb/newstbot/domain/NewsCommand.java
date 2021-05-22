@@ -5,6 +5,7 @@ import com.nb.newstbot.service.NewsParser;
 import com.nb.newstbot.service.NewsParserImpl;
 import com.nb.newstbot.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
+import org.brunocvcunha.instagram4j.Instagram4j;
 import org.springframework.util.CollectionUtils;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -26,6 +27,8 @@ import java.util.TimerTask;
 @Slf4j
 public class NewsCommand extends ServiceCommand {
 
+    private final String instaUsername = "nickbrabus_2020";
+    private final String instaPassword = "y96S^Qkg(3$DzCw";
     private NewsParser parser = new NewsParserImpl();
     private Map<Long, NewsMetaData> latestArticlePerChat = new HashMap<>();
     private InstagramClient instagram = new InstagramClient();
@@ -35,6 +38,8 @@ public class NewsCommand extends ServiceCommand {
         NewsMetaData instagramMetaData = new NewsMetaData();
         Long instagramChatId = -1L;
         latestArticlePerChat.put(instagramChatId, instagramMetaData);
+        final Instagram4j instagram4j = instagram.initInstagram(instaUsername, instaPassword);
+//        instagram.loginInstagram(instagram4j);
     }
 
     @Override
