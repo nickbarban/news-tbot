@@ -11,10 +11,11 @@
     <groupId>com.nb</groupId>
     <artifactId>news-tbot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
     <name>news-tbot</name>
     <description>Telegram bot for parsing news sites and publishing in a telegram account</description>
     <properties>
-        <java.version>15</java.version>
+        <java.version>11</java.version>
         <testcontainers.version>1.15.2</testcontainers.version>
         <telegram.version>5.0.1</telegram.version>
     </properties>
@@ -91,10 +92,11 @@
 
     <build>
         <plugins>
-            <!--<plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <mainClass>com.nb.newstbot.NewsTbotApplication</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -102,7 +104,7 @@
                         </exclude>
                     </excludes>
                 </configuration>
-            </plugin>-->
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>appassembler-maven-plugin</artifactId>
@@ -130,7 +132,7 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>appengine-maven-plugin</artifactId>
-                <version>2.1.0</version>
+                <version>2.2.0</version>
                 <configuration>
                     <version>1</version>
                     <projectId>GCLOUD_CONFIG</projectId>

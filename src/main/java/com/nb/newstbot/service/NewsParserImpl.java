@@ -88,7 +88,7 @@ public class NewsParserImpl implements NewsParser {
 
             return articles;
         } catch (IOException e) {
-            log.error("Could not connect to url: %s".formatted(url), e);
+            log.error(String.format("Could not connect to url: %s", url), e);
             return Collections.emptyList();
         }
     }
@@ -140,7 +140,7 @@ public class NewsParserImpl implements NewsParser {
                             LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
                             article.setDate(LocalDateTime.of(localDate, LocalTime.parse(e.select("dfn").first().text())));
                         } catch (Exception ex) {
-                            log.error("Could not parse date of article: %s".formatted(date), ex);
+                            log.error(String.format("Could not parse date of article: %s", date), ex);
                             article.setDate(LocalDateTime.of(LocalDate.now().minusDays(2), LocalTime.parse(e.select("dfn").first().text())));
                         }
                     }
@@ -157,7 +157,7 @@ public class NewsParserImpl implements NewsParser {
                                 yesterday = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
                                 log.info("New start date is: {}", yesterday);
                             } catch (Exception ex) {
-                                log.error("Could not parse date text for div: %s".formatted(date), ex);
+                                log.error(String.format("Could not parse date text for div: %s", date), ex);
                             }
                         }
                     }
@@ -172,7 +172,7 @@ public class NewsParserImpl implements NewsParser {
 
             return articles;
         } catch (IOException e) {
-            log.error("Could not connect to url: %s".formatted(url), e);
+            log.error(String.format("Could not connect to url: %s", url), e);
             return Collections.emptyList();
         }
 

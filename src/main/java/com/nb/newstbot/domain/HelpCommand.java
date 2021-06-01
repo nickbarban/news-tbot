@@ -19,7 +19,7 @@ public class HelpCommand extends ServiceCommand {
     @Override
     public void execute(AbsSender sender, User user, Chat chat, String[] arguments) {
         String username = Utils.getUsername(user);
-        String message = "This bot will send you news from next resources: %s".formatted(NewsTbotApplication.RESOURCES);
+        String message = String.format("This bot will send you news from next resources: %s", NewsTbotApplication.RESOURCES);
         sendAnswer(sender, chat.getId(), this.getCommandIdentifier(), username, message);
     }
 }

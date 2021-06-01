@@ -1,5 +1,6 @@
 package com.nb.newstbot.domain;
 
+import com.nb.newstbot.utils.Utils;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -18,7 +19,7 @@ public class StartCommand extends ServiceCommand {
 
     @Override
     public void execute(AbsSender sender, User user, Chat chat, String[] arguments) {
-        String username = Optional.ofNullable(user.getUserName()).orElse("%s %s".formatted(user.getFirstName(), user.getLastName()));
+        String username = Optional.ofNullable(user.getUserName()).orElse(Utils.getFio(user));
         String message = "Let's start! For recent news type /news. For help type /help";
         sendAnswer(sender, chat.getId(), this.getCommandIdentifier(), username, message);
     }

@@ -99,7 +99,7 @@ public class NewsCommand extends ServiceCommand {
         try {
             return parser.getNews();
         } catch (IOException ex) {
-            String error = "Could not parse and sent news to chat %d".formatted(chat.getId());
+            String error = String.format("Could not parse and sent news to chat %d", chat.getId());
             log.error(error, ex);
         }
         return Collections.emptyList();

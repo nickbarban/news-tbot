@@ -33,7 +33,7 @@ public abstract class ServiceCommand extends BotCommand {
         try {
             sender.execute(message);
         } catch (TelegramApiException e) {
-            log.error("Could not execute command '%s' from %s".formatted(commandName, username), e);
+            log.error(String.format("Could not execute command '%s' from %s", commandName, username), e);
         }
     }
 }
